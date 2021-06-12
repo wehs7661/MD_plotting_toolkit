@@ -54,7 +54,7 @@ setup(
     project_urls={
         'Bug Reports': 'https://github.com/wehs7661/MD_plotting_toolkit/issues',
         'Source': 'https://github.com/wehs7661/MD_plotting_toolkit',
-    }
+    },
 
     # Add entry points
     entry_points={

@@ -3,6 +3,7 @@ MD_plotting_toolkit
 [//]: # (Badges)
 [![GitHub Actions Build Status](https://github.com/wehs7661/MD_plotting_toolkit/actions/workflows/CI.yaml/badge.svg)](https://github.com/wehs7661/MD_plotting_toolkit/actions/workflows/CI.yaml)
 [![GitHub Actions Lint Status](https://github.com/wehs7661/MD_plotting_toolkit/actions/workflows/lint.yaml/badge.svg)](https://github.com/wehs7661/MD_plotting_toolkit/actions/workflows/lint.yaml)
+[![Documentation Status](https://readthedocs.org/projects/md-plotting-toolkit/badge/?version=latest)](https://md-plotting-toolkit.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/MD_plotting_toolkit/branch/master/graph/badge.svg)](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/MD_plotting_toolkit/branch/master)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 
