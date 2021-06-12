@@ -10,15 +10,16 @@
 """
 The `plot_xy` module plots variable y against x given a set of 2d data.
 """
+import argparse
+import glob
 import os
 import sys
-import glob
-import numpy as np
-import natsort
-import argparse
-import plotting_utils
+
 import data_processing
 import matplotlib.pyplot as plt
+import natsort
+import numpy as np
+import plotting_utils
 from utils import *
 
 

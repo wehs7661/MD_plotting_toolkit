@@ -3,7 +3,9 @@ MD_plotting_toolkit
 This is a repository providing useufl codes for visualizing MD simulation data.
 """
 import sys
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
+
 import versioneer
 
 short_description = __doc__.split("\n")
@@ -51,6 +53,7 @@ setup(
         'natsort',
         'argparse'
         ],
+        
     project_urls={
         'Bug Reports': 'https://github.com/wehs7661/MD_plotting_toolkit/issues',
         'Source': 'https://github.com/wehs7661/MD_plotting_toolkit',
@@ -60,8 +63,8 @@ setup(
     entry_points={
         'console_scripts':[
             'plot_xy = MD_plotting_toolkit.plot_xy:main',
-        ]
-    }
+        ],
+    },
 
     # Additional entries you may want simply uncomment the lines you want and fill in the data
     # url='http://www.my_package.com',  # Website
