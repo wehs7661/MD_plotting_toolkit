@@ -10,21 +10,21 @@ visualizing simulation data obtained from molecular dynamics (especially
 for GROMACS). 
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Getting started:
    introduction
+   :maxdepth: 2
+   :caption: Getting started:  
 
 .. toctree::
+   tutorials
    :maxdepth: 2
    :caption: Tutorials:
-   tutorials
    
 
 .. toctree::
+   api
    :maxdepth: 2
    :caption: API documentation:
-   api
-
+   
 
 Indices and tables
 ==================

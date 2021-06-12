@@ -51,7 +51,8 @@ setup(
         'scipy',
         'matplotlib',
         'natsort',
-        'argparse'
+        'argparse',
+        'pymbar'
         ],
         
     project_urls={

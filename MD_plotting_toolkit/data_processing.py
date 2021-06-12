@@ -11,8 +11,8 @@
 The `data_processing` module provides functions for processing data.
 """
 import numpy as np
-import plotting_utils
-from utils import *
+import MD_plotting_toolkit.plotting_utils as plotting_utils
+from MD_plotting_toolkit.utils import *
 
 
 def deduplicate_data():
