@@ -18,6 +18,7 @@ from utils import *
 def deduplicate_data():
     pass
 
+
 def read_2d_data(f_input, col_idx=1):
     """
     This function reads in any input file that is readable by np.loadtxt or the 
@@ -50,10 +51,11 @@ def read_2d_data(f_input, col_idx=1):
             if '#' not in line and '@' not in line:
                 x_data.append(float(line.split()[0]))
                 y_data.append(float(line.split()[col_idx]))
-        
+
         x_data, y_data = np.array(x_data), np.array(y_data)
-    
+
     return x_data, y_data
+
 
 def scale_data(data, conversion=None, factor=None, T=None):
     """
@@ -78,7 +80,7 @@ def scale_data(data, conversion=None, factor=None, T=None):
     data (np.array): The processed data
     """
     c1 = 1.38064852 * 6.022 * T / 1000  # multiply to convert from kT to kJ/mol
-    c2 = np.pi / 180 # multiply to convert from degree to radian
+    c2 = np.pi / 180  # multiply to convert from degree to radian
     c3 = 0.239005736  # multiply to convert from J to cal (or kJ/mol to kcal/mol)
 
     conversion_dict = {
@@ -98,10 +100,11 @@ def scale_data(data, conversion=None, factor=None, T=None):
 
     if factor is None:
         factor = 1
-    
-    data *= factor 
 
-    return data 
+    data *= factor
+
+    return data
+
 
 def slice_data(data, truncate=None, retain=None):
     """
@@ -118,13 +121,14 @@ def slice_data(data, truncate=None, retain=None):
     -------
     data (data): The processed data.
     """
-    if truncate is not None:  
-        data = data[int(0.01 * float(truncate) * len(data)):]   
+    if truncate is not None:
+        data = data[int(0.01 * float(truncate) * len(data)):]
 
     if retain is not None:
         data = data[:int(0.01 * float(retain) * len(data))]
 
     return data
+
 
 def analyze_data(x, y, x_label, y_label, outfile):
     """
@@ -140,7 +144,7 @@ def analyze_data(x, y, x_label, y_label, outfile):
     L = Logging(outfile)
     x_var, x_unit = plotting_utils.identify_var_units(x_label)
     y_var, y_unit = plotting_utils.identify_var_units(y_label)
-    
+
     y_avg = np.mean(y)
     y2_avg = np.mean(np.power(y, 2))
     RMSF = np.sqrt((y2_avg - y_avg ** 2)) / y_avg
@@ -152,12 +156,5 @@ def analyze_data(x, y, x_label, y_label, outfile):
         y = np.array(y)
         diff = np.abs(y - y_avg)
         t_avg = x[np.argmin(diff)]
-        L.logger(f'The configuration at {t_avg:.3f}{x_unit} has the {y_var} ({y[np.argmin(diff)]:.3f}{y_unit}) that is closet to the average.')
-
-
-    
-
-        
-
-
-
+        L.logger(
+            f'The configuration at {t_avg:.3f}{x_unit} has the {y_var} ({y[np.argmin(diff)]:.3f}{y_unit}) that is closet to the average.')

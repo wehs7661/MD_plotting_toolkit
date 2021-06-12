@@ -44,6 +44,25 @@ setup(
     # Allows `setup.py test` to work correctly with pytest
     setup_requires=[] + pytest_runner,
 
+    install_requires=[
+        'numpy',
+        'scipy',
+        'matplotlib',
+        'natsort',
+        'argparse'
+        ],
+    project_urls={
+        'Bug Reports': 'https://github.com/wehs7661/MD_plotting_toolkit/issues',
+        'Source': 'https://github.com/wehs7661/MD_plotting_toolkit',
+    }
+
+    # Add entry points
+    entry_points={
+        'console_scripts':[
+            'plot_xy = MD_plotting_toolkit.plot_xy:main',
+        ]
+    }
+
     # Additional entries you may want simply uncomment the lines you want and fill in the data
     # url='http://www.my_package.com',  # Website
     # install_requires=[],              # Required packages, pulls from pip if needed; do not use for Conda deployment
