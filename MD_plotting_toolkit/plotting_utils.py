@@ -8,10 +8,11 @@
 #                                                                         #
 ###########################################################################
 """
-The `plotting_tuils` module provide various utilities for plotting. 
+The `plotting_utils` module provide various utilities for plotting. 
 """
 import matplotlib.pyplot as plt
 from matplotlib import rc
+
 
 def default_settings():
     """
@@ -25,6 +26,7 @@ def default_settings():
     # Set the font used for MathJax - more on this later
     rc('mathtext', **{'default': 'regular'})
     plt.rc('font', family='serif')
+
 
 def identify_var_units(label):
     """
@@ -54,11 +56,11 @@ def identify_var_units(label):
             var = label.lower()
     else:
         unit = ''
-        var = None 
-    
+        var = None
+
     if label == 'X-axis':
         var = 'x'
     if label == 'Y-axis':
         var = 'y'
-    
+
     return var, unit

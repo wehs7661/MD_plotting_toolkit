@@ -1,0 +1,36 @@
+name: lint
+
+on:
+  push:
+
+jobs:
+
+  lint:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v2.3.4
+      - uses: actions/setup-python@v2.2.2
+        with:
+          python-version: '3.7'
+      - name: Install the package
+        run: |
+          python setup.py develop --no-deps
+
+      - name: Install isort / flake8 / black
+        run: |
+          pip install isort flake8 black
+
+      - name: Run isort
+        run: |
+          isort --check-only MD_plotting_toolkit
+
+      - name: Run black
+        run: |
+          black MD_plotting_toolkit --check
+
+      - name: Run flake8
+        run: |
+          flake8 MD_plotting_toolkit

@@ -10,12 +10,12 @@
 """
 The `plot_xy` module plots variable y against x given a set of 2d data.
 """
-import os 
+import os
 import sys
 import glob
-import numpy as np 
-import natsort 
-import argparse 
+import numpy as np
+import natsort
+import argparse
 import plotting_utils
 import data_processing
 import matplotlib.pyplot as plt
@@ -44,14 +44,14 @@ def initialize():
                         type=str,
                         default='Y-axis',
                         help='The name and units of y-axis. Default: "Y-axis".')
-    parser.add_argument('-c', 
-                        '--column', 
-                        type=int, 
+    parser.add_argument('-c',
+                        '--column',
+                        type=int,
                         default=1,
                         help='The column index (starting from 0) of the dependent variable. Default: 1.')
-    parser.add_argument('-t', 
-                        '--title', 
-                        type=str, 
+    parser.add_argument('-t',
+                        '--title',
+                        type=str,
                         help='Title of the plot. Default: No title.')
     parser.add_argument('-n',
                         '--pngname',
@@ -60,15 +60,15 @@ def initialize():
                             The default is the filename of the input with .png as the extension.')
     parser.add_argument('-cx',
                         '--x_conversion',
-                        choices=['degree to radian', 'radian to degree', 'kT to kcal/mol', \
-                            'kcal/mol to kT', 'kT to kJ/mol', 'kJ/mol to kT', 'kJ/mol to kcal/mol', \
-                            'kcal/mol to kJ/mol', 'ns to ps', 'ps to ns'],
+                        choices=['degree to radian', 'radian to degree', 'kT to kcal/mol',
+                                 'kcal/mol to kT', 'kT to kJ/mol', 'kJ/mol to kT', 'kJ/mol to kcal/mol',
+                                 'kcal/mol to kJ/mol', 'ns to ps', 'ps to ns'],
                         help='The unit conversion for the data in x-axis.')
     parser.add_argument('-cy',
                         '--y_conversion',
-                        choices=['degree to radian', 'radian to degree', 'kT to kcal/mol', \
-                            'kcal/mol to kT', 'kT to kJ/mol', 'kJ/mol to kT', 'kJ/mol to kcal/mol', \
-                            'kcal/mol to kJ/mol'],
+                        choices=['degree to radian', 'radian to degree', 'kT to kcal/mol',
+                                 'kcal/mol to kT', 'kT to kJ/mol', 'kJ/mol to kT', 'kJ/mol to kcal/mol',
+                                 'kcal/mol to kJ/mol'],
                         help='The unit conversion for the data in y-axis.')
     parser.add_argument('-fx',
                         '--factor_x',
@@ -104,21 +104,22 @@ def initialize():
 
     return args_parse
 
+
 if __name__ == '__main__':
     args = initialize()
 
     # Step 1. Setting things up
     plotting_utils.default_settings()
 
-    if isinstance(args.input, str):   
+    if isinstance(args.input, str):
         if '*' in args.xvg:  # allow wildcards
             args.input = natsort.natsorted(glob.glob(args.input), reverse=False)
         else:    # only one input file
             args.input = list(args.xvg)
-    
+
     if args.pngname is None:
-        args.pngname = '.'.join(args.input.split('.')[:-1]) # '.png' will be appended later
-    
+        args.pngname = '.'.join(args.input.split('.')[:-1])  # '.png' will be appended later
+
     if args.temp is None:
         args.temp = 298.15
 
@@ -140,17 +141,17 @@ if __name__ == '__main__':
 
         if args.x_conversion is not None or args.factor_x is not None:
             x = data_processing.scale_data(x, args.x_conversion, args.factor_x, args.temp)
-        
+
         if args.y_conversion is not None or args.factor_y is not None:
             y = data_processing.scale_data(y, args.y_conversion, args.factor_y, args.temp)
 
         # Data slicing as needed
         x = data_processing.slice_data(x, args.truncate, args.retain)
         y = data_processing.slice_data(y, args.truncate, args.retain)
-        
+
         # simple data analysis of y
         data_processing.analyze_data(x, y, args.xlabel, args.ylabel, args.output)
-        
+
         # Plot the figure
         if args.legend is None:
             plt.plot(x, y)
@@ -158,8 +159,7 @@ if __name__ == '__main__':
             plt.plot(x, y, label=f'{args.legend[i]}')
             if len(args.input) > 1:
                 plt.legend(ncol=args.legend_col)
-        
-        
+
     if args.title is not None:
         plt.title(f'{args.title}', weight='bold')
     plt.xlabel(f'{args.xlabel}')
