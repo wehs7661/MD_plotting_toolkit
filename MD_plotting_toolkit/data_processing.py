@@ -63,7 +63,7 @@ def read_2d_data(f_input, col_idx=1):
     return x_data, y_data
 
 
-def scale_data(data, conversion=None, factor=None, T=None):
+def scale_data(data, conversion=None, factor=None, T=298.15):
     """
     This function scales the input data according to the desired unit conversion
     or scaling factor specified by the user.
@@ -122,7 +122,7 @@ def scale_data(data, conversion=None, factor=None, T=None):
     return data
 
 
-def slice_data(data, truncate=None, retain=None):
+def slice_data(data, truncate=None, truncate_b=None):
     """
     This function slices the data given the truncation fraction or the fraction of data
     to be retained. The values should be with 0 to 100 (units: percent).
@@ -132,20 +132,28 @@ def slice_data(data, truncate=None, retain=None):
     data : np.array
         The input data to be sliced.
     truncate : float
-        The fraction of data to be truncated from the beginning.
-    retain : float
-        The fraction of data to be retained from the beginning.
+        The percentage of data to be truncated from the beginning. 20 means 20%.
+    truncate_b : float
+        The percentage of data to be truncated from the end. 20 means 20%.
 
     Returns
     -------
     data : data
         The processed data.
     """
-    if truncate is not None:
+
+    if truncate is not None and truncate_b is None:
         data = data[int(0.01 * float(truncate) * len(data)) :]  # noqa E203
 
-    if retain is not None:
-        data = data[: int(0.01 * float(retain) * len(data))]
+    if truncate_b is not None and truncate is None:
+        data = data[: int(0.01 * float(truncate_b) * len(data))]
+
+    if truncate is not None and truncate_b is not None:
+        data = data[
+            int(0.01 * float(truncate_b) * len(data)) : -int(
+                0.01 * float(truncate) * len(data)
+            )
+        ]
 
     return data
 
@@ -169,20 +177,28 @@ def analyze_data(x, y, x_label, y_label, outfile):
     x_var, x_unit = plotting_utils.identify_var_units(x_label)
     y_var, y_unit = plotting_utils.identify_var_units(y_label)
 
-    y_avg = np.mean(y)
-    y2_avg = np.mean(np.power(y, 2))
-    RMSF = np.sqrt((y2_avg - y_avg ** 2)) / y_avg
-    L.logger(
-        f"The average of {y_var}: {y_avg:.3f} (RMSF: {RMSF:.3f}, max: {max(y):.3f}, min: {min(y):.3f})"
-    )
     if x_unit == " ns" or x_unit == " ps":
+        y_avg = np.mean(y)
+        y2_avg = np.mean(np.power(y, 2))
+        RMSF = np.sqrt((y2_avg - y_avg ** 2)) / y_avg
+
         y = list(y)
+        L.logger(
+            f"The average of {y_var}: {y_avg:.3f} (RMSF: {RMSF:.3f}, max: {max(y):.3f}, min: {min(y):.3f})"
+        )
         L.logger(f"The maximum of {y_var} occurs at {x[y.index(max(y))]:.3f}{x_unit}.")
         L.logger(f"The minimum of {y_var} occurs at {x[y.index(min(y))]:.3f}{x_unit}.")
         y = np.array(y)
         diff = np.abs(y - y_avg)
         t_avg = x[np.argmin(diff)]
         L.logger(
-            f"The configuration at {t_avg:.3f}{x_unit} has the {y_var} \
-                ({y[np.argmin(diff)]:.3f}{y_unit}) that is closet to the average."
+            f"The {y_var} ({y[np.argmin(diff)]:.3f}{y_unit}) at {t_avg:.3f}{x_unit} is closet to the average."
+        )
+    else:  # input data is not a time series
+        y = list(y)
+        L.logger(
+            f"Maximum of {y_var}: {max(y):.3f}{y_unit}, which occurs at {x[y.index(max(y))]:.3f}{x_unit}."
+        )
+        L.logger(
+            f"Minimum of {y_var}: {min(y):.3f}{y_unit}, which occurs at {x[y.index(min(y))]:.3f}{x_unit}."
         )

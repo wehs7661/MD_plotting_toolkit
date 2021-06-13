@@ -118,10 +118,10 @@ def initialize():
         help="Temperature for unit convesion involving kT. Default: 298.15.",
     )
     parser.add_argument(
-        "-tr", "--truncate", help="-tr 1 means truncate the first 1%% of the data."
+        "-tr", "--truncate", help="-tr 1 means truncate the first 1%% of the data from the beginning."
     )
     parser.add_argument(
-        "-r", "--retain", help="-r 1 means only analyze the first 1%% of the data."
+        "-trb", "--truncate_b", help="-r 1 means only analyze the first 1%% of the data from the end."
     )
     parser.add_argument(
         "-lc",
@@ -194,8 +194,8 @@ if __name__ == "__main__":
             )
 
         # Data slicing as needed
-        x = data_processing.slice_data(x, args.truncate, args.retain)
-        y = data_processing.slice_data(y, args.truncate, args.retain)
+        x = data_processing.slice_data(x, args.truncate, args.truncate_b)
+        y = data_processing.slice_data(y, args.truncate, args.truncate_b)
 
         # simple data analysis of y
         data_processing.analyze_data(x, y, args.xlabel, args.ylabel, args.output)
