@@ -12,3 +12,6 @@ comment:
   behavior: default
   flags: null
   paths: null
+
+ignore:
+  - "MD_plotting_toolkit.plot_xy.py"
