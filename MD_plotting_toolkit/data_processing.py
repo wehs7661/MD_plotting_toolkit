@@ -10,9 +10,12 @@
 """
 The `data_processing` module provides functions for processing data.
 """
+import sys
 import numpy as np
-import plotting_utils
-import utils
+
+sys.path.append("../")
+import MD_plotting_toolkit.plotting_utils as plotting_utils  # noqa: E402
+import MD_plotting_toolkit.utils as utils  # noqa: E402
 
 
 def deduplicate_data():
@@ -139,7 +142,7 @@ def slice_data(data, truncate=None, retain=None):
         The processed data.
     """
     if truncate is not None:
-        data = data[int(0.01 * float(truncate) * len(data)):]
+        data = data[int(0.01 * float(truncate) * len(data)) :]  # noqa E203
 
     if retain is not None:
         data = data[: int(0.01 * float(retain) * len(data))]

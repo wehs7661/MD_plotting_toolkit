@@ -15,11 +15,12 @@ import glob
 import os
 import sys
 
-import data_processing
-import matplotlib.pyplot as plt
-import natsort
-import plotting_utils
-import utils
+sys.path.append("../")
+import matplotlib.pyplot as plt  # noqa: E402
+import natsort  # noqa: E402
+import MD_plotting_toolkit.data_processing as data_processing  # noqa: E402
+import MD_plotting_toolkit.plotting_utils as plotting_utils  # noqa: E402
+import MD_plotting_toolkit.utils as utils  # noqa: E402
 
 
 def initialize():

@@ -19,13 +19,9 @@ jobs:
         run: |
           python setup.py develop --no-deps
 
-      - name: Install isort / flake8 / black
+      - name: Install flake8 / black
         run: |
-          pip install isort flake8 black
-
-      - name: Run isort
-        run: |
-          isort --check-only MD_plotting_toolkit
+          pip install flake8 black
 
       - name: Run black
         run: |
