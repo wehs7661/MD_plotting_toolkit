@@ -7,7 +7,7 @@ This is a repository providing useufl codes for visualizing MD simulation data.
 from ._version import get_versions
 
 # Add imports here
-from .md_plotting_toolkit import *
+from .md_plotting_toolkit import canvas
 
 versions = get_versions()
 __version__ = versions["version"]
