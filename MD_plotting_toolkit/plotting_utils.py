@@ -1,12 +1,12 @@
-###########################################################################
-#                                                                         #
-#    MD_plotting_toolkit,                                                 #
-#    a python package to visualize the results obtained from MD           #
-#                                                                         #
-#    Written by Wei-Tse Hsu <wehs7661@colorado.edu>                       #
-#    Copyright (c) 2021 University of Colorado Boulder                    #
-#                                                                         #
-###########################################################################
+####################################################################
+#                                                                  #
+#    MD_plotting_toolkit,                                          #
+#    a python package to visualize the results obtained from MD    #
+#                                                                  #
+#    Written by Wei-Tse Hsu <wehs7661@colorado.edu>                #
+#    Copyright (c) 2021 University of Colorado Boulder             #
+#                                                                  #
+####################################################################
 """
 The `plotting_utils` module provide various utilities for plotting.
 """
@@ -44,7 +44,7 @@ def identify_var_units(label):
     if label is not None:
         if "(" in label:
             if "$" in label.split("(")[1]:
-                unit = " " + label.split("$")[1].split("$")[0]
+                unit = " ".join(label.split("$")[1].split("$")[0].split(" ")[:-1])
             else:
                 unit = " " + label.split("(")[1].split(")")[0]
             var = " ".join(label.split("(")[:-1]).lower()

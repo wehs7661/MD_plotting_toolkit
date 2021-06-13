@@ -1,12 +1,12 @@
-###########################################################################
-#                                                                         #
-#    MD_plotting_toolkit,                                                 #
-#    a python package to visualize the results obtained from MD           #
-#                                                                         #
-#    Written by Wei-Tse Hsu <wehs7661@colorado.edu>                       #
-#    Copyright (c) 2021 University of Colorado Boulder                    #
-#                                                                         #
-###########################################################################
+####################################################################
+#                                                                  #
+#    MD_plotting_toolkit,                                          #
+#    a python package to visualize the results obtained from MD    #
+#                                                                  #
+#    Written by Wei-Tse Hsu <wehs7661@colorado.edu>                #
+#    Copyright (c) 2021 University of Colorado Boulder             #
+#                                                                  #
+####################################################################
 """
 The `plot_xy` module plots variable y against x given a set of 2d data.
 """
@@ -18,6 +18,7 @@ import sys
 sys.path.append("../")
 import matplotlib.pyplot as plt  # noqa: E402
 import natsort  # noqa: E402
+
 import MD_plotting_toolkit.data_processing as data_processing  # noqa: E402
 import MD_plotting_toolkit.plotting_utils as plotting_utils  # noqa: E402
 import MD_plotting_toolkit.utils as utils  # noqa: E402
@@ -118,10 +119,14 @@ def initialize():
         help="Temperature for unit convesion involving kT. Default: 298.15.",
     )
     parser.add_argument(
-        "-tr", "--truncate", help="-tr 1 means truncate the first 1%% of the data from the beginning."
+        "-tr",
+        "--truncate",
+        help="-tr 1 means truncate the first 1%% of the data from the beginning.",
     )
     parser.add_argument(
-        "-trb", "--truncate_b", help="-r 1 means only analyze the first 1%% of the data from the end."
+        "-trb",
+        "--truncate_b",
+        help="-r 1 means only analyze the first 1%% of the data from the end.",
     )
     parser.add_argument(
         "-lc",

@@ -1,16 +1,17 @@
-###########################################################################
-#                                                                         #
-#    MD_plotting_toolkit,                                                 #
-#    a python package to visualize the results obtained from MD           #
-#                                                                         #
-#    Written by Wei-Tse Hsu <wehs7661@colorado.edu>                       #
-#    Copyright (c) 2021 University of Colorado Boulder                    #
-#                                                                         #
-###########################################################################
+####################################################################
+#                                                                  #
+#    MD_plotting_toolkit,                                          #
+#    a python package to visualize the results obtained from MD    #
+#                                                                  #
+#    Written by Wei-Tse Hsu <wehs7661@colorado.edu>                #
+#    Copyright (c) 2021 University of Colorado Boulder             #
+#                                                                  #
+####################################################################
 """
 The `data_processing` module provides functions for processing data.
 """
 import sys
+
 import numpy as np
 
 sys.path.append("../")
@@ -150,7 +151,7 @@ def slice_data(data, truncate=None, truncate_b=None):
 
     if truncate is not None and truncate_b is not None:
         data = data[
-            int(0.01 * float(truncate_b) * len(data)) : -int(
+            int(0.01 * float(truncate_b) * len(data)) : -int(  # noqa E203
                 0.01 * float(truncate) * len(data)
             )
         ]

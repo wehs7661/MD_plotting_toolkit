@@ -1,17 +1,19 @@
-###########################################################################
-#                                                                         #
-#    MD_plotting_toolkit,                                                 #
-#    a python package to visualize the results obtained from MD           #
-#                                                                         #
-#    Written by Wei-Tse Hsu <wehs7661@colorado.edu>                       #
-#    Copyright (c) 2021 University of Colorado Boulder                    #
-#                                                                         #
-###########################################################################
+####################################################################
+#                                                                  #
+#    MD_plotting_toolkit,                                          #
+#    a python package to visualize the results obtained from MD    #
+#                                                                  #
+#    Written by Wei-Tse Hsu <wehs7661@colorado.edu>                #
+#    Copyright (c) 2021 University of Colorado Boulder             #
+#                                                                  #
+####################################################################
 """
 Unit tests for the module `MD_plotting_toolkit.data_processing`.
 """
 import os
+
 import numpy as np
+
 import MD_plotting_toolkit.data_processing as data_processing
 
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -126,10 +128,12 @@ def test_analyze_data():
     x_label = "Time (ns)"
     y_label = "Distance (nm)"
     data_processing.analyze_data(x, y, x_label, y_label, outfile)
-    line_1 = 'The average of distance: 149.500 (RMSF: 0.193, max: 199.000, min: 100.000)\n'
-    line_2 = 'The maximum of distance occurs at 99.000 ns.\n'
-    line_3 = 'The minimum of distance occurs at 0.000 ns.\n'
-    line_4 = 'The distance (149.000 nm) at 49.000 ns is closet to the average.\n'
+    line_1 = (
+        "The average of distance: 149.500 (RMSF: 0.193, max: 199.000, min: 100.000)\n"
+    )
+    line_2 = "The maximum of distance occurs at 99.000 ns.\n"
+    line_3 = "The minimum of distance occurs at 0.000 ns.\n"
+    line_4 = "The distance (149.000 nm) at 49.000 ns is closet to the average.\n"
     texts = [line_1, line_2, line_3, line_4]
 
     infile = open(outfile, "r")
@@ -139,7 +143,3 @@ def test_analyze_data():
     assert os.path.isfile(outfile) is True
     assert texts == lines
     os.remove(outfile)
-
-    
-
-    
