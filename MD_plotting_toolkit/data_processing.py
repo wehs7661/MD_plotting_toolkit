@@ -13,14 +13,11 @@ The `data_processing` module provides functions for processing data.
 import sys
 
 import numpy as np
+import pandas as pd
 
 sys.path.append("../")
 import MD_plotting_toolkit.plotting_utils as plotting_utils  # noqa: E402
 import MD_plotting_toolkit.utils as utils  # noqa: E402
-
-
-def deduplicate_data():
-    pass
 
 
 def read_2d_data(f_input, col_idx=1):
@@ -64,6 +61,51 @@ def read_2d_data(f_input, col_idx=1):
     return x_data, y_data
 
 
+def deduplicate_data(x, y):
+    """
+    This function deduplicate the input data, typically a time series. The overlapped
+    time frames are discarded by keeping the last occurance of the duplicates.
+
+    Parameters
+    ----------
+    x : array-like
+        The data of independent variable (usually time) where the overlapped data happened.
+    y : array-like
+        The data of dependent variable.
+
+    Returns
+    -------
+    x : list
+        The dedupliated data of indpendent variable.
+    y : list
+        The deduplicated data of dependent variable.
+
+    Notes
+    -----
+    This function could be useful to analyze xvg files or PLUMED output obtained
+    from a long simulations extended for several times. Whenever we extend a simulation
+    previously terminated due to timeout or any other issues, the simulation does not
+    starts exactly from where it ends previously but the last checkpoint, which should be
+    generated within several to 15 minutes before the simulation stopped. For example,
+    the simulation could stop at 1582 ps and the last checkopint was at 1566 ps. If we
+    extend the simulation, the data between 1562 to 1582 ps will be overlapped and should
+    be discarded. The function `data_deduplicate` is meant for dealing with this situation.
+    """
+    df_original = pd.DataFrame({"x": x, "y": y})
+    df = df_original[~df_original["x"].duplicated(keep="last")]
+    df = df.dropna()  # drop N/A in case that there is any
+    df = (
+        df.reset_index()
+    )  # reset the index of the data frame, after this an column "index" will be added
+    df = df.drop(columns=["index"])  # drop the index column
+    if len(df) == len(df_original):
+        return x, y  # do nothing
+    else:
+        x = list(df[df.columns[0]])
+        y = list(df[df.columns[1]])
+        return x, y
+
+
 def scale_data(data, conversion=None, factor=None, T=298.15):
     """
     This function scales the input data according to the desired unit conversion
@@ -87,7 +129,7 @@ def scale_data(data, conversion=None, factor=None, T=298.15):
     Returns
     -------
     data : np.array
-        The processed data
+        The processed data.
     """
     c1 = 1.38064852 * 6.022 * T / 1000  # multiply to convert from kT to kJ/mol
     c2 = np.pi / 180  # multiply to convert from degree to radian
@@ -130,7 +172,7 @@ def slice_data(data, truncate=None, truncate_b=None):
 
     Parameters
     ----------
-    data : np.array
+    data : array-like
         The input data to be sliced.
     truncate : float
         The percentage of data to be truncated from the beginning. 20 means 20%.
@@ -139,7 +181,7 @@ def slice_data(data, truncate=None, truncate_b=None):
 
     Returns
     -------
-    data : data
+    data : array-like
         The processed data.
     """
 

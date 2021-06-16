@@ -8,7 +8,7 @@
 #                                                                  #
 ####################################################################
 """
-The `plotting_utils` module provide various utilities for plotting.
+The `plotting_utils` module provides various utilities for plotting.
 """
 import matplotlib.pyplot as plt
 from matplotlib import rc

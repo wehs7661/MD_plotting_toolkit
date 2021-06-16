@@ -116,17 +116,21 @@ def initialize():
     parser.add_argument(
         "-T",
         "--temp",
+        type=float,
+        default=298.15,
         help="Temperature for unit convesion involving kT. Default: 298.15.",
     )
     parser.add_argument(
         "-tr",
         "--truncate",
-        help="-tr 1 means truncate the first 1%% of the data from the beginning.",
+        help="-tr 1 means truncate the first 1%% of the data from the beginning.\
+            This typically applies for, but not is restricted to time series data.",
     )
     parser.add_argument(
         "-trb",
         "--truncate_b",
-        help="-r 1 means only analyze the first 1%% of the data from the end.",
+        help="-r 1 means only analyze the first 1%% of the data from the end. \
+            This typically applies for, but not is restricted to time series data.",
     )
     parser.add_argument(
         "-lc",
@@ -169,9 +173,6 @@ if __name__ == "__main__":
             args.input.split(".")[:-1]
         )  # '.png' will be appended later
 
-    if args.temp is None:
-        args.temp = 298.15
-
     if args.output is None:
         args.output = "results_" + args.pngname.split(".png")[0] + ".txt"
 
@@ -187,6 +188,9 @@ if __name__ == "__main__":
         L.logger("Analyzing the file ... ")
         L.logger("Plotting and saving figure ...")
         x, y = data_processing.read_2d_data(args.input[i], args.column)
+
+        if "Time" in args.xlabel or "time" in args.xlabel:  # time series
+            x, y = data_processing.deduplicate_data(x, y)
 
         if args.x_conversion is not None or args.factor_x is not None:
             x = data_processing.scale_data(
