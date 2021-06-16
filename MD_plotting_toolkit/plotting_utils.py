@@ -10,6 +10,7 @@
 """
 The `plotting_utils` module provides various utilities for plotting.
 """
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rc
 
@@ -63,3 +64,31 @@ def identify_var_units(label):
         var = "y"
 
     return var, unit
+
+
+def get_fig_dimension(n_subplots):
+    """
+    Gets the number of plots in each row/column given the total number of subplots. The dimensions
+    will be as close as to a square as possible.
+
+    Parameters
+    ----------
+    n_subplots (int): The number of subplots.
+
+    Returns
+    -------
+    n_rows (int): The number of rows in the figure.
+    n_cols (int): The number of columns in the figure.
+    """
+    if int(np.sqrt(n_subplots) + 0.5) ** 2 == n_subplots:
+        # perfect square number
+        n_cols = int(np.sqrt(n_subplots))
+    else:
+        n_cols = int(np.floor(np.sqrt(n_subplots))) + 1
+
+    if n_subplots % n_cols == 0:
+        n_rows = int(n_subplots / n_cols)
+    else:
+        n_rows = int(np.floor(n_subplots / n_cols)) + 1
+
+    return n_cols, n_rows

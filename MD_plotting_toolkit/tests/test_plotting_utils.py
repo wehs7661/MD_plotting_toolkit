@@ -11,7 +11,6 @@
 Unit tests for the module `MD_plotting_toolkit.plotting_utils`.
 """
 import matplotlib.pyplot as plt
-
 import MD_plotting_toolkit.plotting_utils as plotting_utils
 
 
@@ -44,3 +43,16 @@ def test_identify_var_units():
     assert u5 == " deg"
     assert v6 == "dihedral"
     assert u6 == ""
+
+
+def test_get_fig_dimension():
+    c1, r1 = plotting_utils.get_fig_dimension(49)
+    c2, r2 = plotting_utils.get_fig_dimension(50)
+    c3, r3 = plotting_utils.get_fig_dimension(56)
+
+    assert c1 == 7
+    assert r1 == 7
+    assert c2 == 8
+    assert r2 == 7
+    assert c3 == 8
+    assert r3 == 7
