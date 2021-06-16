@@ -1,0 +1,7 @@
+numpmy
+scipy
+matplotlib
+natsort
+argparse
+pymbar
+pandas

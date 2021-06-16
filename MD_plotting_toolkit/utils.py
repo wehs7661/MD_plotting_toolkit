@@ -8,7 +8,7 @@
 #                                                                  #
 ####################################################################
 """
-The `utils` module provide various general utilities.
+The `utils` module provides various general utilities.
 """
 
 
@@ -21,7 +21,7 @@ class Logging:
         Prints the results on screen and to the file free_energy_results.txt
 
         Parameters
-        ---------
+        ----------
         file_name : str
             The file name of the output.
         """

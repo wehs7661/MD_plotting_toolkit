@@ -22,6 +22,8 @@ output_path = os.path.join(current_path, "sample_outputs")
 
 fes_file = input_path + "/fes.dat"
 potential_file = input_path + "/potential.xvg"
+hills_corrupted = input_path + "/corrupted_HILLS"
+dhdl_corrupted = input_path + "/corrupted_dhdl.xvg"
 
 
 def test_read_2d_data():
@@ -57,6 +59,29 @@ def test_read_2d_data():
     np.testing.assert_array_almost_equal(y2, yy2)
     np.testing.assert_array_almost_equal(x3, xx3)
     np.testing.assert_array_almost_equal(y3, yy3)
+
+
+def test_deduplicate_data():
+    x1 = [2, 4, 6, 2, 7, 8, 4, 3]  # not the x-data for a typical time seris
+    y1 = [1, 2, 3, 4, 5, 6, 7, 8]
+
+    # Below we test from reading the file to cleaning the data
+
+    x2, y2 = data_processing.read_2d_data(hills_corrupted)  # PLUMED output
+    x3, y3 = data_processing.read_2d_data(dhdl_corrupted)  # GROMACS output
+
+    x1, y1 = data_processing.deduplicate_data(x1, y1)
+    x2, y2 = data_processing.deduplicate_data(x2, y2)
+    x3, y3 = data_processing.deduplicate_data(x3, y3)
+
+    assert x1 == [6, 2, 7, 8, 4, 3]
+    assert y1 == [3, 4, 5, 6, 7, 8]
+    assert len(x2) == 3000
+    assert len(y2) == 3000
+    assert len(x3) == 1501
+    assert len(y3) == 1501
+    assert int(np.sum(np.diff(x2))) == (len(x2) - 1) * 1
+    assert int(np.sum(np.diff(x3))) == (len(x3) - 1) * 2
 
 
 def test_scale_data():

@@ -15,3 +15,4 @@ comment:
 
 ignore:
   - "MD_plotting_toolkit.plot_xy.py"
+  - "MD_plotting_toolkit.plot_hist.py"
