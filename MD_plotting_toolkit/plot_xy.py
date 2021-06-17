@@ -156,7 +156,7 @@ def initialize():
     return args_parse
 
 
-if __name__ == "__main__":
+def main():
     args = initialize()
 
     # Step 1. Setting things up
