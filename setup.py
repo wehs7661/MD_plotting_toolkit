@@ -64,6 +64,8 @@ setup(
     entry_points={
         'console_scripts':[
             'plot_xy = MD_plotting_toolkit.plot_xy:main',
+            'plot_hist = MD_plotting_toolkit.plot_hist:main',
+            'combine_plots = MD_plotting_toolkit.combine_plots:main',
         ],
     },
 

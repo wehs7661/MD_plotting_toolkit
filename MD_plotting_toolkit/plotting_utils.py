@@ -96,12 +96,12 @@ def get_fig_dimension(n_subplots):
 
 def get_bars_locations(n_bars, n_groups, width):
     """
-    Gets the locations of all the bars in a grouped bar chart. \
-    
+    Gets the locations of all the bars in a grouped bar chart.
+
     Parameters
     ----------
     n_bars : int
-        The number of bars in each group. 
+        The number of bars in each group.
     n_groups : int
         The total number of groups of bars.
     width : float
@@ -118,7 +118,7 @@ def get_bars_locations(n_bars, n_groups, width):
         spacing = (n_bars * width) * 2 / 3  # 2/3 of the total width for a group
     else:
         spacing = (n_bars * width) * 1 / 5  # tighter spacing
-    
+
     bar_locs = []
     for i in range(n_groups):
         locs = []
@@ -129,6 +129,3 @@ def get_bars_locations(n_bars, n_groups, width):
     bar_locs = np.array(bar_locs)
 
     return bar_locs
-
-
-        

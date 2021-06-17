@@ -64,15 +64,14 @@ def test_get_bars_locations():
     locs_1 = plotting_utils.get_bars_locations(3, 5, 0.2)
     expected_1 = np.array([0.1, 0.3, 0.5])
     np.testing.assert_array_almost_equal(locs_1[0], expected_1)
-    shift = 3 * 0.2 + 3 * 0.2 * 2/3  # n_bars * width + spacing
+    shift = 3 * 0.2 + 3 * 0.2 * 2 / 3  # n_bars * width + spacing
     for i in range(1, 5):
         np.testing.assert_array_almost_equal(expected_1 + shift * i, locs_1[i])
-    
+
     # Test 2: Small spacing (spacing = 0.1)
     locs_2 = plotting_utils.get_bars_locations(5, 8, 0.1)
     expected_2 = np.array([0.05, 0.15, 0.25, 0.35, 0.45])
     np.testing.assert_array_almost_equal(locs_2[0], expected_2)
-    shift = 5 * 0.1 + 5 * 0.1 * 1/5  # n_bars * width + spacing
+    shift = 5 * 0.1 + 5 * 0.1 * 1 / 5  # n_bars * width + spacing
     for i in range(1, 8):
         np.testing.assert_array_almost_equal(expected_2 + shift * i, locs_2[i])
-    
