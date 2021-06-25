@@ -74,8 +74,8 @@ def test_deduplicate_data():
     x2, y2 = data_processing.deduplicate_data(x2, y2)
     x3, y3 = data_processing.deduplicate_data(x3, y3)
 
-    assert x1 == [6, 2, 7, 8, 4, 3]
-    assert y1 == [3, 4, 5, 6, 7, 8]
+    assert list(x1) == [6, 2, 7, 8, 4, 3]
+    assert list(y1) == [3, 4, 5, 6, 7, 8]
     assert len(x2) == 3000
     assert len(y2) == 3000
     assert len(x3) == 1501

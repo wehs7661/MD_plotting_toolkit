@@ -1,0 +1,7 @@
+
+Data analysis of the file: ../../MD_plotting_toolkit/data/HILLS_2D
+==================================================================
+- Working directory: /Users/Wei-TseHsu/Documents/Life in CU Bouler/Research in Shirts Lab/Code_development/GitHub/MD_plotting_toolkit/MD_plotting_toolkit/tests/sample_inputs
+- Command line: /usr/local/bin/plot_hist -i ../../MD_plotting_toolkit/data/HILLS_2D ../../MD_plotting_toolkit/tests/sample_inputs/corrupted_HILLS -x Dihedral (deg) -cc radian to degree -Nb -1 1 -t Dihedral distribution -nb 100 -n dihedral_distribution -l Trial 1 Trial 2
+Analyzing the file ... 
+Plotting and saving figure ...
