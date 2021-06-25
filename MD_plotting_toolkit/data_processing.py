@@ -37,9 +37,9 @@ def read_2d_data(f_input, col_idx=1):
 
     Returns
     -------
-    x_data : np.array
+    x_data : numpy.ndarray
         The data of independent variable read from the input file.
-    y_data : np.array
+    y_data : numpy.ndarray
         The data of dependent variable read from the input file.
     """
     try:
@@ -75,9 +75,9 @@ def deduplicate_data(x, y):
 
     Returns
     -------
-    x : list
+    x : numpy.ndarray
         The dedupliated data of indpendent variable.
-    y : list
+    y : numpy.ndarray
         The deduplicated data of dependent variable.
 
     Notes
@@ -90,6 +90,7 @@ def deduplicate_data(x, y):
     the simulation could stop at 1582 ps and the last checkopint was at 1566 ps. If we
     extend the simulation, the data between 1562 to 1582 ps will be overlapped and should
     be discarded. The function `data_deduplicate` is meant for dealing with this situation.
+    For a relevant example, please refer to Example 5 in the tutorial of the command `plot_xy`.
     """
     df_original = pd.DataFrame({"x": x, "y": y})
     df = df_original[~df_original["x"].duplicated(keep="last")]
@@ -101,8 +102,8 @@ def deduplicate_data(x, y):
     if len(df) == len(df_original):
         return x, y  # do nothing
     else:
-        x = list(df[df.columns[0]])
-        y = list(df[df.columns[1]])
+        x = np.array(df[df.columns[0]])
+        y = np.array(df[df.columns[1]])
         return x, y
 
 
@@ -113,7 +114,7 @@ def scale_data(data, conversion=None, factor=None, T=298.15):
 
     Parameters
     ----------
-    data : np.array
+    data : numpy.ndarray
         The input data to be scaled.
     conversion : str
         The string describing what units the conversion should be carried out between.
@@ -128,7 +129,7 @@ def scale_data(data, conversion=None, factor=None, T=298.15):
 
     Returns
     -------
-    data : np.array
+    data : numpy.ndarray
         The processed data.
     """
     c1 = 1.38064852 * 6.022 * T / 1000  # multiply to convert from kT to kJ/mol
@@ -207,9 +208,9 @@ def analyze_data(x, y, x_label, y_label, outfile):
 
     Parameters
     ----------
-    x : np.array
+    x : numpy.ndarray
         The data of variable x.
-    y : np.array
+    y : numpy.ndarray
         The data of variable y.
     x_label : str
         The label of the x-axis.

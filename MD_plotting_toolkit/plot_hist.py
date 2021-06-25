@@ -18,7 +18,7 @@ import sys
 sys.path.append("../")
 import matplotlib.pyplot as plt  # noqa: E402
 import natsort  # noqa: E402
-import numpu as np  # noqa: E402
+import numpy as np  # noqa: E402
 
 import MD_plotting_toolkit.data_processing as data_processing  # noqa: E402
 import MD_plotting_toolkit.plotting_utils as plotting_utils  # noqa: E402
@@ -36,7 +36,9 @@ def initialize():
         nargs="+",
         help="The filename(s) of the input(s). Wildcards can be used.",
     )
-    parser.add_argument("-l", "--legend", nargs="+", help="Legends of the histograms.")
+    parser.add_argument(
+        "-l", "--legend", type=str, nargs="+", help="Legends of the histograms."
+    )
     parser.add_argument(
         "-x",
         "--xlabel",
