@@ -47,6 +47,13 @@ def initialize():
         help='The name and units of x-axis. Default: "X-axis".',
     )
     parser.add_argument(
+        "-y",
+        "--ylabel",
+        type=str,
+        default="Count",
+        help='The name and units of y-axis. Default: "Count".',
+    )
+    parser.add_argument(
         "-c",
         "--column",
         type=int,
@@ -105,11 +112,11 @@ def initialize():
         help="Temperature for unit convesion involving kT. Default: 298.15.",
     )
     parser.add_argument(
-        "-o",
-        "--outline",
+        "-ol",
+        "--outlines",
         default=False,
         action="store_true",
-        help="Whether to plot the histogram outline.",
+        help="Whether to plot the histogram outlines.",
     )
     parser.add_argument(
         "-tr",
@@ -173,10 +180,20 @@ def main():
     if args.output is None:
         args.output = "results_" + args.pngname.split(".png")[0] + ".txt"
 
+    if args.normalized is True:
+        args.ylabel = "Probability density"
+    else:
+        args.ylabel = "Count"
+
     L = utils.Logging(args.dir + args.output)
 
     # Step 2. Read and preprocess (e.g. deduplicatoin, unit conversion) the input data
-    for i in range(len(args.xvg)):
+    if len(args.input) > 1:
+        alpha = 0.7  # more transparent if multiple hisotgrams are plotted
+    else:
+        alpha = 1
+
+    for i in range(len(args.input)):
         result_str = f"\nData analysis of the file: {args.input[i]}"
         L.logger(result_str)
         L.logger("=" * (len(result_str) - 1))  # len(result_str) includes \n
@@ -205,27 +222,50 @@ def main():
             truncated_y = np.array(
                 list(set(y[y < upper_b]).intersection(y[y > lower_b]))
             )
-            results = np.histogram(truncated_y, bins=args.nbins)
+            results = np.histogram(
+                truncated_y, bins=args.nbins, density=args.normalized
+            )
+            N_ratio = np.max(results[0]) / np.min(results[0])
+        else:
+            results = np.histogram(y, bins=args.nbins, density=args.normalized)
             N_ratio = np.max(results[0]) / np.min(results[0])
         L.logger(f"N_ratio = {N_ratio:.3f}")
 
         # Plot the histogram
         if args.legend is None:
-            if args.outline is True:
-                plt.hist(y, bins=args.nbins, edgecolor="black", linewidth=1.2)
-            elif args.outline is False:
-                plt.hist(y, bins=args.nbins)
+            if args.outlines is True:
+                plt.hist(
+                    y,
+                    bins=args.nbins,
+                    edgecolor="black",
+                    linewidth=1.2,
+                    density=args.normalized,
+                    alpha=alpha,
+                )
+            elif args.outlines is False:
+                plt.hist(y, bins=args.nbins, density=args.normalized, alpha=alpha)
         else:
-            if args.outline is True:
+            if args.outlines is True:
                 plt.hist(
                     y,
                     bins=args.nbins,
                     edgecolor="black",
                     linewidth=1.2,
                     label=f"{args.legend[i]}",
+                    density=args.normalized,
+                    alpha=alpha,
                 )
-            elif args.outline is False:
-                plt.hist(y, bins=args.nbins, label=f"{args.legend[i]}")
+            elif args.outlines is False:
+                plt.hist(
+                    y,
+                    bins=args.nbins,
+                    label=f"{args.legend[i]}",
+                    density=args.normalized,
+                    alpha=alpha,
+                )
+
+            if len(args.input) > 1:
+                plt.legend(ncol=args.legend_col)
 
     if args.title is not None:
         plt.title(f"{args.title}", weight="bold")
