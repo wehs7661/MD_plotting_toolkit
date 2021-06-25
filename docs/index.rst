@@ -15,10 +15,16 @@ for GROMACS).
    :caption: Getting started:  
 
 .. toctree::
-   tutorials
+   examples/input_files
+   examples/plot_xy
+   examples/plot_xyz
+   examples/plot_hist
+   examples/plot_bar
+   examples/plot_violin
+   examples/plot_matrix
+   examples/combine_plots
    :maxdepth: 2
    :caption: Tutorials:
-   
 
 .. toctree::
    api

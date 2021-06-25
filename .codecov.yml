@@ -14,4 +14,8 @@ comment:
   paths: null
 
 ignore:
-  - "MD_plotting_toolkit.plot_*.py"
+  - "MD_plotting_toolkit.plot_xy.py"
+  - "MD_plotting_toolkit.plot_hist.py"
+  - "MD_plotting_toolkit.combine_plots.py"
+  - "MD_plotting_toolkit.plot_grouped_bars.py"
+  - "MD_plotting_toolkit.plot_xyz.py"

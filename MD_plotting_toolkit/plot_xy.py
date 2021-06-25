@@ -151,13 +151,11 @@ def initialize():
         help="The file name of output documenting the statistics of the input data.",
     )
 
-    args_parse = parser.parse_args()
-
-    return args_parse
+    return parser
 
 
 def main():
-    args = initialize()
+    args = initialize().parse_args(sys.argv[1:])  # sys.args[0]: program name
 
     # Step 1. Setting things up
     plotting_utils.default_settings()
@@ -169,9 +167,13 @@ def main():
             args.input = list(args.xvg)
 
     if args.pngname is None:
-        args.pngname = ".".join(
-            args.input.split(".")[:-1]
-        )  # '.png' will be appended later
+        file_name = args.input[0].split("/")[-1]
+        if "." in file_name:
+            args.pngname = ".".join(
+                args.input[0].split(".")[:-1]
+            )  # '.png' will be appended later
+        else:
+            args.pngname = file_name
 
     if args.output is None:
         args.output = "results_" + args.pngname.split(".png")[0] + ".txt"
@@ -221,6 +223,7 @@ def main():
         plt.title(f"{args.title}", weight="bold")
     plt.xlabel(f"{args.xlabel}")
     plt.ylabel(f"{args.ylabel}")
+
     if max(abs(x)) >= 10000:
         plt.ticklabel_format(style="sci", axis="x", scilimits=(0, 0))
     if max(abs(y)) >= 10000:
