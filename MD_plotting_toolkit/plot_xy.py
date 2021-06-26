@@ -161,10 +161,10 @@ def main():
     plotting_utils.default_settings()
 
     if isinstance(args.input, str):
-        if "*" in args.xvg:  # allow wildcards
+        if "*" in args.input:  # allow wildcards
             args.input = natsort.natsorted(glob.glob(args.input), reverse=False)
         else:  # only one input file
-            args.input = list(args.xvg)
+            args.input = list(args.input)
 
     if args.pngname is None:
         file_name = args.input[0].split("/")[-1]
