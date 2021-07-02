@@ -150,7 +150,6 @@ def main():
                 raise utils.ParameterError(
                     "The number of titles does not match the number of subplots."
                 )
-                sys.exit()
 
         # Step 2. Combine plots
         for i in range(len(args.figs)):

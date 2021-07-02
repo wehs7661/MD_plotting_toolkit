@@ -14,7 +14,9 @@ import argparse
 import glob
 import os
 import sys
+import warnings
 
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 sys.path.append("../")
 import matplotlib.pyplot as plt  # noqa: E402
 import natsort  # noqa: E402
@@ -174,7 +176,7 @@ def main():
 
     if args.pngname is None:
         args.pngname = ".".join(
-            args.input.split(".")[:-1]
+            args.input[0].split(".")[:-1]
         )  # '.png' will be appended later
 
     if args.output is None:
@@ -199,8 +201,6 @@ def main():
         L.logger("=" * (len(result_str) - 1))  # len(result_str) includes \n
         L.logger(f"- Working directory: {os.getcwd()}")
         L.logger(f'- Command line: {" ".join(sys.argv)}')
-        L.logger("Analyzing the file ... ")
-        L.logger("Plotting and saving figure ...")
         x, y = data_processing.read_2d_data(args.input[i], args.column)
 
         if "Time" in args.xlabel or "time" in args.xlabel:  # time series
@@ -212,9 +212,6 @@ def main():
         # Data slicing if needed
         x = data_processing.slice_data(x, args.truncate, args.truncate_b)
         y = data_processing.slice_data(y, args.truncate, args.truncate_b)
-
-        # simple data analysis of y
-        data_processing.analyze_data(x, y, args.xlabel, args.ylabel, args.output)
 
         # Calculate the N_ratio
         if args.Nr_bound is not None:  # N_ratio = x(max) / x(min)
@@ -229,12 +226,12 @@ def main():
         else:
             results = np.histogram(y, bins=args.nbins, density=args.normalized)
             N_ratio = np.max(results[0]) / np.min(results[0])
-        L.logger(f"N_ratio = {N_ratio:.3f}")
+        L.logger(f"Assessment of the hsitogram flatness: N_ratio = {N_ratio:.3f}")
 
         # Plot the histogram
         if args.legend is None:
             if args.outlines is True:
-                plt.hist(
+                results = plt.hist(
                     y,
                     bins=args.nbins,
                     edgecolor="black",
@@ -246,7 +243,7 @@ def main():
                 plt.hist(y, bins=args.nbins, density=args.normalized, alpha=alpha)
         else:
             if args.outlines is True:
-                plt.hist(
+                results = plt.hist(
                     y,
                     bins=args.nbins,
                     edgecolor="black",
@@ -256,7 +253,7 @@ def main():
                     alpha=alpha,
                 )
             elif args.outlines is False:
-                plt.hist(
+                results = plt.hist(
                     y,
                     bins=args.nbins,
                     label=f"{args.legend[i]}",
@@ -266,6 +263,20 @@ def main():
 
             if len(args.input) > 1:
                 plt.legend(ncol=args.legend_col)
+
+    # Some simple statistics
+    x_var, x_unit = plotting_utils.identify_var_units(args.xlabel)
+    y_var, y_unit = plotting_utils.identify_var_units(args.ylabel)
+    max_n = np.max(results[0])
+    max_n_idx = list(results[0]).index(max_n)
+    b1 = results[1][max_n_idx]  # left bound
+    b2 = results[1][max_n_idx + 1]  # right bound
+    L.logger(f"The maximum of {x_var} is {np.max(y):.6f}{x_unit}.")
+    L.logger(f"The minimum of {x_var} is {np.min(y):.6f}{x_unit}.")
+    L.logger(f"The total number of counts is {len(x)}.")
+    L.logger(
+        f"{x_var[0].upper() + x_var[1:]} between {b1:.6f} and {b2:.6f}{x_unit} has the highest probability density."
+    )
 
     if args.title is not None:
         plt.title(f"{args.title}", weight="bold")
