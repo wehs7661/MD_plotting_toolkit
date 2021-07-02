@@ -218,16 +218,15 @@ def main():
             plt.plot(x, y, label=f"{args.legend[i]}")
             if len(args.input) > 1:
                 plt.legend(ncol=args.legend_col)
+        if max(abs(x)) >= 10000 or max(abs(x)) <= 0.001:
+            plt.ticklabel_format(style="sci", axis="x", scilimits=(0, 0))
+        if max(abs(y)) >= 10000 or max(abs(y)) <= 0.001:
+            plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 
     if args.title is not None:
         plt.title(f"{args.title}", weight="bold")
     plt.xlabel(f"{args.xlabel}")
     plt.ylabel(f"{args.ylabel}")
-
-    if max(abs(x)) >= 10000:
-        plt.ticklabel_format(style="sci", axis="x", scilimits=(0, 0))
-    if max(abs(y)) >= 10000:
-        plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
     plt.grid(True)
 
     plt.savefig(f"{args.dir}{args.pngname}.png")

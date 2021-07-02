@@ -12,6 +12,7 @@ The `plot_hist` module plots a histogram given the data of a variable.
 """
 import argparse
 import glob
+import itertools
 import os
 import sys
 import warnings
@@ -21,6 +22,7 @@ sys.path.append("../")
 import matplotlib.pyplot as plt  # noqa: E402
 import natsort  # noqa: E402
 import numpy as np  # noqa: E402
+import scipy.stats as stats  # noqa: E402
 
 import MD_plotting_toolkit.data_processing as data_processing  # noqa: E402
 import MD_plotting_toolkit.plotting_utils as plotting_utils  # noqa: E402
@@ -133,6 +135,20 @@ def initialize():
             This typically applies for, but not is restricted to time series data.",
     )
     parser.add_argument(
+        "-r",
+        "--range",
+        type=float,
+        nargs="+",
+        help="The bounds for the histogram(s) (min, max)",
+    )
+    parser.add_argument(
+        "-k",
+        "--ks_test",
+        default=False,
+        action="store_true",
+        help="Whether to perform a Kolmogorov-Smirnov (K-S) test between any two distributions or not.",
+    )
+    parser.add_argument(
         "-Nb",
         "--Nr_bound",
         type=float,
@@ -194,7 +210,7 @@ def main():
         alpha = 0.7  # more transparent if multiple hisotgrams are plotted
     else:
         alpha = 1
-
+    x_all, y_all = [], []
     for i in range(len(args.input)):
         result_str = f"\nData analysis of the file: {args.input[i]}"
         L.logger(result_str)
@@ -212,6 +228,32 @@ def main():
         # Data slicing if needed
         x = data_processing.slice_data(x, args.truncate, args.truncate_b)
         y = data_processing.slice_data(y, args.truncate, args.truncate_b)
+
+        x_all.append(x)
+        y_all.append(y)
+
+        # Out of bound warning
+        if args.range is not None:
+            args.range = tuple(args.range)
+            adjusted = False
+            if len(args.input) == 1:
+                while np.min(y) < args.range[0]:
+                    adjusted = True
+                    args.range[0] *= 0.95
+                while np.max(y) > args.range[1]:
+                    adjusted = True
+                    args.range[1] *= 1.05
+                if adjusted is True:
+                    L.logger(
+                        "Note: The bounds for the histogram are adjusted to include all the data."
+                    )
+                    L.logger(f"The new bounds are ({args.range[0]:.3f}, {args.range[1]:.3f})")
+            else:
+                if np.min(y) < args.range[0] or np.max(y) > args.range[1]:
+                    raise utils.ParameterError(
+                        f"The data (min: {np.min(y)}, max: {np.max(y)}) is out of the specified bounds {args.range} for this histogram. \
+                        Please consider not specifying the bounds or specifying wider bounds."
+                    )
 
         # Calculate the N_ratio
         if args.Nr_bound is not None:  # N_ratio = x(max) / x(min)
@@ -234,6 +276,7 @@ def main():
                 results = plt.hist(
                     y,
                     bins=args.nbins,
+                    range=args.range,
                     edgecolor="black",
                     linewidth=1.2,
                     density=args.normalized,
@@ -246,6 +289,7 @@ def main():
                 results = plt.hist(
                     y,
                     bins=args.nbins,
+                    range=args.range,
                     edgecolor="black",
                     linewidth=1.2,
                     label=f"{args.legend[i]}",
@@ -256,6 +300,7 @@ def main():
                 results = plt.hist(
                     y,
                     bins=args.nbins,
+                    range=args.range,
                     label=f"{args.legend[i]}",
                     density=args.normalized,
                     alpha=alpha,
@@ -263,30 +308,47 @@ def main():
 
             if len(args.input) > 1:
                 plt.legend(ncol=args.legend_col)
+        
+        if max(abs(y)) >= 10000 or max(abs(y)) <= 0.001:  # variable y! (which is the x-axis in the plot)
+            plt.ticklabel_format(style="sci", axis="x", scilimits=(0, 0))
+        if max(abs(results[0])) >= 10000 or max(abs(results[0])) <= 0.001:  # counts
+            plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 
-    # Some simple statistics
-    x_var, x_unit = plotting_utils.identify_var_units(args.xlabel)
-    y_var, y_unit = plotting_utils.identify_var_units(args.ylabel)
-    max_n = np.max(results[0])
-    max_n_idx = list(results[0]).index(max_n)
-    b1 = results[1][max_n_idx]  # left bound
-    b2 = results[1][max_n_idx + 1]  # right bound
-    L.logger(f"The maximum of {x_var} is {np.max(y):.6f}{x_unit}.")
-    L.logger(f"The minimum of {x_var} is {np.min(y):.6f}{x_unit}.")
-    L.logger(f"The total number of counts is {len(x)}.")
-    L.logger(
-        f"{x_var[0].upper() + x_var[1:]} between {b1:.6f} and {b2:.6f}{x_unit} has the highest probability density."
-    )
+        # Some simple statistics
+        x_var, x_unit = plotting_utils.identify_var_units(args.xlabel)
+        max_n = np.max(results[0])
+        max_n_idx = list(results[0]).index(max_n)
+        b1 = results[1][max_n_idx]  # left bound
+        b2 = results[1][max_n_idx + 1]  # right bound
+        L.logger(f"The maximum of {x_var} is {np.max(y):.6f}{x_unit}.")
+        L.logger(f"The minimum of {x_var} is {np.min(y):.6f}{x_unit}.")
+        L.logger(f"The total number of counts is {len(y)}.")
+        L.logger(
+            f"{x_var[0].upper() + x_var[1:]} between {b1:.6f} and {b2:.6f}{x_unit} has the highest probability density."
+        )
 
     if args.title is not None:
         plt.title(f"{args.title}", weight="bold")
     plt.xlabel(f"{args.xlabel}")
     plt.ylabel(f"{args.ylabel}")
-    if max(abs(x)) >= 10000:
-        plt.ticklabel_format(style="sci", axis="x", scilimits=(0, 0))
-    if max(abs(y)) >= 10000:
-        plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
     plt.grid(True)
 
     plt.savefig(f"{args.dir}{args.pngname}.png")
     plt.show()
+
+    if args.ks_test is True:
+        n_distribution = len(args.input)
+        if n_distribution == 1:
+            raise utils.ParameterError("At least two input files are required to perform a K-S test.")
+        else:
+            pairs = list(itertools.combinations(range(n_distribution), 2))
+            for i in pairs:
+                L.logger("\n=== Kolmogorov-Smirnov test ===")
+                L.logger(f"- Files of interest: {args.input[i[0]]}, {args.input[i[1]]}")
+                L.logger(f"- Null hypothesis: The distributions obtained from the two files are consistent with each other.")
+                p_value = stats.kstest(y_all[i[0]], y_all[i[1]])[1]
+                L.logger(f"- p-value: {p_value}")
+                if p_value > 0.05:    # statistically significant
+                    L.logger("- Interpretation: The two distributions are consistent with each other.")
+                else:
+                    L.logger(f"- Interpretation: The two distributions are not consistent with each other.")
