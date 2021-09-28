@@ -150,6 +150,12 @@ def initialize():
         "--output",
         help="The file name of output documenting the statistics of the input data.",
     )
+    parser.add_argument(
+        "-w",
+        "--window",
+        type=int,
+        help="The number of data points in a window. Only when specified, the running average will be plotted.",
+    )
 
     return parser
 
@@ -222,6 +228,16 @@ def main():
             plt.ticklabel_format(style="sci", axis="x", scilimits=(0, 0))
         if max(abs(y)) >= 10000 or max(abs(y)) <= 0.001:
             plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+
+        # Plot the running average as needed
+        if args.window is not None:
+            L.logger("Calculating and plotting the running average ...")
+            L.logger(f"Window size: {args.window} data points")
+            running_avg = data_processing.running_avg(y, args.window)
+            
+            plt.plot(x[(args.window - 1):], running_avg, label='Running avg.')
+            plt.legend()
+
 
     if args.title is not None:
         plt.title(f"{args.title}", weight="bold")
