@@ -246,3 +246,19 @@ def analyze_data(x, y, x_label, y_label, outfile):
         L.logger(
             f"Minimum of {y_var}: {min(y):.3f}{y_unit}, which occurs at {x[y.index(min(y))]:.3f}{x_unit}."
         )
+
+def running_avg(series, N):
+    """
+    Calculate the running average of a given time series with a specified window size.
+
+    Parameters
+    ----------
+    series : numpy.ndarray
+        The time series to be analyzed.
+    N : int
+        The number of data points in a window.
+    """
+    cumsum = np.cumsum(np.insert(series, 0, 0)) 
+    running_avg = (cumsum[N:] - cumsum[:-N]) / float(N)
+
+    return running_avg
