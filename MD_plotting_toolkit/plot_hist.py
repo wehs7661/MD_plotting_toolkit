@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import natsort  # noqa: E402
 import numpy as np  # noqa: E402
 import scipy.stats as stats  # noqa: E402
+import seaborn as sns  # noqa: E402
 
 import MD_plotting_toolkit.data_processing as data_processing  # noqa: E402
 import MD_plotting_toolkit.plotting_utils as plotting_utils  # noqa: E402
@@ -41,7 +42,12 @@ def initialize():
         help="The filename(s) of the input(s). Wildcards can be used.",
     )
     parser.add_argument(
-        "-l", "--legend", type=str, nargs="+", help="Legends of the histograms."
+        "-l",
+        "--legend",
+        type=str,
+        default=[None],
+        nargs="+",
+        help="Legends of the histograms.",
     )
     parser.add_argument(
         "-x",
@@ -54,8 +60,7 @@ def initialize():
         "-y",
         "--ylabel",
         type=str,
-        default="Count",
-        help='The name and units of y-axis. Default: "Count".',
+        help='The name and units of y-axis. Default: "Count", if -s is also not specified.',
     )
     parser.add_argument(
         "-c",
@@ -79,11 +84,22 @@ def initialize():
         help="The number of bins for the histogram.",
     )
     parser.add_argument(
-        "-nr",
-        "--normalized",
+        "-s",
+        "--stats",
+        default="count",
+        choices=["count", "frequency", "density", "probability"],
+        help="Aggregate statistic to compute in each bin.\
+            (1) 'count' shows the number of observations.\
+            (2) 'frequency' shows the number of observations divided by the bin width.\
+            (3) 'density' normalizes counts so that the area of the histogram is 1.\
+            (4) 'probability' normalizes counts so that the sum of the bar heights is 1.",
+    )
+    parser.add_argument(
+        "-k",
+        "--kde",
         default=False,
         action="store_true",
-        help="Whether to normalize the counts.",
+        help="Whether to sketch a KDE (Kernel Density Estimation) plot or not.",
     )
     parser.add_argument(
         "-cc",
@@ -116,13 +132,6 @@ def initialize():
         help="Temperature for unit convesion involving kT. Default: 298.15.",
     )
     parser.add_argument(
-        "-ol",
-        "--outlines",
-        default=False,
-        action="store_true",
-        help="Whether to plot the histogram outlines.",
-    )
-    parser.add_argument(
         "-tr",
         "--truncate",
         help="-tr 1 means truncate the first 1%% of the data from the beginning. \
@@ -142,7 +151,7 @@ def initialize():
         help="The bounds for the histogram(s) (min, max)",
     )
     parser.add_argument(
-        "-k",
+        "-ks",
         "--ks_test",
         default=False,
         action="store_true",
@@ -198,10 +207,14 @@ def main():
     if args.output is None:
         args.output = "results_" + args.pngname.split(".png")[0] + ".txt"
 
-    if args.normalized is True:
-        args.ylabel = "Probability density"
-    else:
+    if args.stats == "count":
         args.ylabel = "Count"
+    elif args.stats == "frequency":
+        args.ylabel = "Frequency (count / bin width)"
+    elif args.stats == "density":
+        args.ylabel = "Probability density"
+    elif args.stats == "probability":
+        args.ylabel = "Probability"
 
     L = utils.Logging(args.dir + args.output)
 
@@ -247,7 +260,9 @@ def main():
                     L.logger(
                         "Note: The bounds for the histogram are adjusted to include all the data."
                     )
-                    L.logger(f"The new bounds are ({args.range[0]:.3f}, {args.range[1]:.3f})")
+                    L.logger(
+                        f"The new bounds are ({args.range[0]:.3f}, {args.range[1]:.3f})"
+                    )
             else:
                 if np.min(y) < args.range[0] or np.max(y) > args.range[1]:
                     raise utils.ParameterError(
@@ -262,69 +277,61 @@ def main():
                 list(set(y[y < upper_b]).intersection(y[y > lower_b]))
             )
             results = np.histogram(
-                truncated_y, bins=args.nbins, density=args.normalized
+                truncated_y, bins=args.nbins, density=(args.stats == "density"), range=args.range
             )
             N_ratio = np.max(results[0]) / np.min(results[0])
         else:
-            results = np.histogram(y, bins=args.nbins, density=args.normalized)
+            results = np.histogram(
+                y, bins=args.nbins, density=(args.stats == "density"), range=args.range
+            )
             N_ratio = np.max(results[0]) / np.min(results[0])
         L.logger(f"Assessment of the hsitogram flatness: N_ratio = {N_ratio:.3f}")
 
         # Plot the histogram
-        if args.legend is None:
-            if args.outlines is True:
-                results = plt.hist(
-                    y,
-                    bins=args.nbins,
-                    range=args.range,
-                    edgecolor="black",
-                    linewidth=1.2,
-                    density=args.normalized,
-                    alpha=alpha,
-                )
-            elif args.outlines is False:
-                plt.hist(y, bins=args.nbins, density=args.normalized, alpha=alpha)
-        else:
-            if args.outlines is True:
-                results = plt.hist(
-                    y,
-                    bins=args.nbins,
-                    range=args.range,
-                    edgecolor="black",
-                    linewidth=1.2,
-                    label=f"{args.legend[i]}",
-                    density=args.normalized,
-                    alpha=alpha,
-                )
-            elif args.outlines is False:
-                results = plt.hist(
-                    y,
-                    bins=args.nbins,
-                    range=args.range,
-                    label=f"{args.legend[i]}",
-                    density=args.normalized,
-                    alpha=alpha,
-                )
+        ax = sns.histplot(
+            y,
+            bins=args.nbins,
+            binrange=args.range,
+            label=f"{args.legend[i]}",
+            stat=args.stats,
+            kde=args.kde,
+            line_kws=dict(color='yellow'),
+            alpha=alpha,
+        )
+ 
+        if len(args.input) > 1:
+            plt.legend(ncol=args.legend_col)
 
-            if len(args.input) > 1:
-                plt.legend(ncol=args.legend_col)
+        # Get the data of count/frequency/probability/density 
+        hist_data, bin_edges = np.histogram(y, bins=args.nbins, density=(args.stats=="density"))
+        #hist_data /= 5
+        if args.stats == 'count':
+            pass
+        elif args.stats == 'density':
+            pass
+        elif args.stats == 'frequency':
+            bin_width = bin_edges[1] - bin_edges[0]
+            hist_data /= bin_width
+        elif args.stats == 'probability':
+            hist_data /= np.sum(hist_data)
         
-        if max(abs(y)) >= 10000 or max(abs(y)) <= 0.001:  # variable y! (which is the x-axis in the plot)
+        if max(abs(y)) >= 10000 or max(abs(y)) <= 0.001:
+            # variable y! (which is the x-axis in the plot)
             plt.ticklabel_format(style="sci", axis="x", scilimits=(0, 0))
-        if max(abs(results[0])) >= 10000 or max(abs(results[0])) <= 0.001:  # counts
+        if max(abs(hist_data)) >= 10000 or max(abs(hist_data)) <= 0.001:
             plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 
         # Some simple statistics
         x_var, x_unit = plotting_utils.identify_var_units(args.xlabel)
-        max_n = np.max(results[0])
-        max_n_idx = list(results[0]).index(max_n)
-        b1 = results[1][max_n_idx]  # left bound
-        b2 = results[1][max_n_idx + 1]  # right bound
+        max_n = np.max(hist_data)
+        max_n_idx = list(hist_data).index(max_n)
+        b1 = bin_edges[max_n_idx]  # left bound
+        b2 = bin_edges[max_n_idx + 1]  # right bound
         L.logger(f"The maximum of {x_var} is {np.max(y):.6f}{x_unit}.")
         L.logger(f"The minimum of {x_var} is {np.min(y):.6f}{x_unit}.")
         L.logger(f"The total number of counts is {len(y)}.")
         L.logger(
-            f"{x_var[0].upper() + x_var[1:]} between {b1:.6f} and {b2:.6f}{x_unit} has the highest probability density."
+            f"{x_var[0].upper() + x_var[1:]} between {b1:.6f} and {b2:.6f}{x_unit} has the highest {args.stats}, which is {max_n}."
         )
 
     if args.title is not None:
@@ -339,16 +346,25 @@ def main():
     if args.ks_test is True:
         n_distribution = len(args.input)
         if n_distribution == 1:
-            raise utils.ParameterError("At least two input files are required to perform a K-S test.")
+            raise utils.ParameterError(
+                "At least two input files are required to perform a K-S test."
+            )
         else:
             pairs = list(itertools.combinations(range(n_distribution), 2))
             for i in pairs:
                 L.logger("\n=== Kolmogorov-Smirnov test ===")
                 L.logger(f"- Files of interest: {args.input[i[0]]}, {args.input[i[1]]}")
-                L.logger(f"- Null hypothesis: The distributions obtained from the two files are consistent with each other.")
-                p_value = stats.kstest(y_all[i[0]], y_all[i[1]])[1]
+                L.logger(
+                    f"- Null hypothesis: The distributions obtained from the two files are consistent with each other."
+                )
+                d_statistics, p_value = stats.kstest(y_all[i[0]], y_all[i[1]])
+                L.logger(f"- D-statistics {d_statistics}")
                 L.logger(f"- p-value: {p_value}")
-                if p_value > 0.05:    # statistically significant
-                    L.logger("- Interpretation: The two distributions are consistent with each other.")
+                if p_value > 0.05:  # statistically significant
+                    L.logger(
+                        "- Interpretation: The two distributions are consistent with each other."
+                    )
                 else:
-                    L.logger(f"- Interpretation: The two distributions are not consistent with each other.")
+                    L.logger(
+                        f"- Interpretation: The two distributions are not consistent with each other."
+                    )

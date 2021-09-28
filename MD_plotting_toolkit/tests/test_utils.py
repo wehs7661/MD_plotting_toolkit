@@ -34,3 +34,5 @@ class Test_Logging:
 
         assert os.path.isfile(outfile) is True
         assert "Test\n" == lines[0]
+
+        os.remove(outfile)
