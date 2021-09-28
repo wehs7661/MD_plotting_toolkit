@@ -1,7 +1,0 @@
-
-Data analysis of the file: ../../MD_plotting_toolkit/data/HILLS_2D
-==================================================================
-- Working directory: /Users/Wei-TseHsu/Documents/Life in CU Bouler/Research in Shirts Lab/Code_development/GitHub/MD_plotting_toolkit/MD_plotting_toolkit/tests/sample_inputs
-- Command line: /usr/local/bin/plot_hist -i ../../MD_plotting_toolkit/data/HILLS_2D -x Alchemical states -c 2 -t Alchemical distribution -nb 9 -n lambda_distribution -tr 10 -trb 10
-Analyzing the file ... 
-Plotting and saving figure ...
