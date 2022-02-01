@@ -318,6 +318,8 @@ def main():
         if max(abs(y)) >= 10000 or max(abs(y)) <= 0.001:
             # variable y! (which is the x-axis in the plot)
             plt.ticklabel_format(style="sci", axis="x", scilimits=(0, 0))
+            t = ax.yaxis.get_offset_text()
+            t.set_x(-0.06)
         if max(abs(hist_data)) >= 10000 or max(abs(hist_data)) <= 0.001:
             plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 

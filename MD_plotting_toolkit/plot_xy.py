@@ -156,6 +156,13 @@ def initialize():
         type=int,
         help="The number of data points in a window. Only when specified, the running average will be plotted.",
     )
+    parser.add_argument(
+        "-m",
+        "--marker",
+        default=False,
+        action="store_true",
+        help='Whether to plot makers in the plot.'
+    )
 
     return parser
 
@@ -183,6 +190,11 @@ def main():
 
     if args.output is None:
         args.output = "results_" + args.pngname.split(".png")[0] + ".txt"
+
+    if args.marker is False:
+        args.marker = None
+    else:
+        args.marker = '.'
 
     L = utils.Logging(args.dir + args.output)
 
@@ -219,9 +231,9 @@ def main():
 
         # Plot the figure
         if args.legend is None:
-            plt.plot(x, y)
+            plt.plot(x, y, marker=args.marker)
         else:
-            plt.plot(x, y, label=f"{args.legend[i]}")
+            plt.plot(x, y, label=f"{args.legend[i]}", marker=args.marker)
             if len(args.input) > 1:
                 plt.legend(ncol=args.legend_col)
         if max(abs(x)) >= 10000 or max(abs(x)) <= 0.001:
@@ -235,7 +247,7 @@ def main():
             L.logger(f"Window size: {args.window} data points")
             running_avg = data_processing.running_avg(y, args.window)
             
-            plt.plot(x[(args.window - 1):], running_avg, label='Running avg.')
+            plt.plot(x[(args.window - 1):], running_avg, label='Running avg.', marker=args.marker)
             plt.legend()
 
 
