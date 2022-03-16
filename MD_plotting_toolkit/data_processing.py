@@ -185,7 +185,6 @@ def slice_data(data, truncate=None, truncate_b=None):
     data : array-like
         The processed data.
     """
-
     if truncate is not None and truncate_b is None:
         data = data[int(0.01 * float(truncate) * len(data)) :]  # noqa E203
 
@@ -198,7 +197,7 @@ def slice_data(data, truncate=None, truncate_b=None):
                 0.01 * float(truncate) * len(data)
             )
         ]
-
+    
     return data
 
 
