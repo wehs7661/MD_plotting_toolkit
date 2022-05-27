@@ -284,6 +284,9 @@ def main():
             results = np.histogram(
                 y, bins=args.nbins, density=(args.stats == "density"), range=args.range
             )
+            print(len(y))
+            print(results[0])
+            print(args.nbins)
             N_ratio = np.max(results[0]) / np.min(results[0])
         L.logger(f"Assessment of the hsitogram flatness: N_ratio = {N_ratio:.3f}")
 
@@ -317,11 +320,18 @@ def main():
         
         if max(abs(y)) >= 10000 or max(abs(y)) <= 0.001:
             # variable y! (which is the x-axis in the plot)
+            plt.ticklabel_format(style="sci", axis="x", scilimits=(0, 0), useOffset=0.2)
+            
+            """
             plt.ticklabel_format(style="sci", axis="x", scilimits=(0, 0))
             t = ax.yaxis.get_offset_text()
             t.set_x(-0.06)
+            """
+
         if max(abs(hist_data)) >= 10000 or max(abs(hist_data)) <= 0.001:
             plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+        t = ax.yaxis.get_offset_text()
+        t.set_x(-0.06)
 
         # Some simple statistics
         x_var, x_unit = plotting_utils.identify_var_units(args.xlabel)
