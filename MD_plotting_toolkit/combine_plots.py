@@ -60,6 +60,20 @@ def initialize():
             is embedded, setting this to True only plots the border lines of the parent figure.",
     )
     parser.add_argument(
+        "-a",
+        "--annotate",
+        default=False,
+        action="store_true",
+        help="Whether to annotate the figures with panel labels.",
+    )
+    parser.add_argument(
+        "-fo",
+        "--font",
+        choices=['Arial', 'serif'],
+        default='Arial',
+        help="The font for annotation.",
+    )
+    parser.add_argument(
         "-n", "--pngname", help="The name of the figure, not cluding the extension."
     )
     parser.add_argument(
@@ -110,7 +124,7 @@ def initialize():
 def main():
     args = initialize()
 
-    plotting_utils.default_settings()
+    plotting_utils.default_settings(args.font)
 
     # Method 1: Making the input files as the subplots of the new figure
     # Step 1. Setting things up
@@ -152,10 +166,11 @@ def main():
                 )
 
         # Step 2. Combine plots
+        panel_labels='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         for i in range(len(args.figs)):
             image = cv2.imread(args.figs[i], cv2.IMREAD_COLOR)
             image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            fig.add_subplot(n_rows, n_cols, i + 1)
+            ax = fig.add_subplot(n_rows, n_cols, i + 1)
             plt.imshow(image_rgb)
             if args.border is True:
                 plt.xticks([])
@@ -164,6 +179,7 @@ def main():
                 plt.axis("off")
             if args.titles is not None:
                 plt.title(args.titles[i])
+            plt.text(0.02, 0.95, f'({panel_labels[i]})', transform = ax.transAxes, fontsize=26)
 
         plt.tight_layout(rect=[0, 0, 1, 1])
 

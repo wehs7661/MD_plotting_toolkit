@@ -15,14 +15,14 @@ import matplotlib.pyplot as plt
 from matplotlib import rc
 
 
-def default_settings():
+def default_settings(font='Arial'):
     """
     This function adopts the plotting settings shown below.
     """
     rc("font", **{"family": "sans-serif", "sans-serif": ["DejaVu Sans"], "size": 10})
     # Set the font used for MathJax - more on this later
     rc("mathtext", **{"default": "regular"})
-    plt.rc("font", family="serif")
+    plt.rc("font", family=font)
 
 
 def identify_var_units(label):
