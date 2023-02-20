@@ -13,6 +13,8 @@ The `combine_plots` module combines given plots with specified dimensions.
 import argparse
 import sys
 import warnings
+import natsort
+import glob
 
 warnings.filterwarnings("ignore")
 sys.path.append("../")
@@ -45,7 +47,7 @@ def initialize():
     parser.add_argument(
         "-s",
         "--size",
-        type=int,
+        type=float,
         nargs="+",
         help="The size of the new figure (length, width). By default, the size will \
             be automatically estimated to enable a tight layout of the new figure.",
@@ -128,6 +130,9 @@ def main():
 
     # Method 1: Making the input files as the subplots of the new figure
     # Step 1. Setting things up
+    if '*' in args.figs[0]:
+        args.figs = natsort.natsorted(glob.glob(args.figs[0]))
+
     if args.embedded is False:
         print(
             "Method 1 of combination is used: The input figures will be made subplots in the new figure."
@@ -179,7 +184,8 @@ def main():
                 plt.axis("off")
             if args.titles is not None:
                 plt.title(args.titles[i])
-            plt.text(0.02, 0.95, f'({panel_labels[i]})', transform = ax.transAxes, fontsize=26)
+            if args.annotate is True:
+                plt.text(0.02, 0.95, f'{panel_labels[i]}', transform = ax.transAxes, fontsize=26, weight='bold')
 
         plt.tight_layout(rect=[0, 0, 1, 1])
 
