@@ -21,7 +21,7 @@ sys.path.append("../")
 
 import cv2  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
-from mpl_toolkits.axes_grid.inset_locator import inset_axes  # noqa: E402
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes  # noqa: E402
 
 import MD_plotting_toolkit.plotting_utils as plotting_utils  # noqa: E402
 import MD_plotting_toolkit.utils as utils  # noqa: E402
@@ -76,7 +76,13 @@ def initialize():
         help="The font for annotation.",
     )
     parser.add_argument(
-        "-n", "--pngname", help="The name of the figure, not cluding the extension."
+        "-n", "--name", help="The file name of the figure, not cluding the extension."
+    )
+    parser.add_argument(
+        "-ex",
+        "--extension",
+        default="png",
+        help="The extension of the figure. The default value is 'png'.",
     )
     parser.add_argument(
         "-e",
@@ -239,4 +245,4 @@ def main():
             plt.axis("off")
 
     plt.tight_layout(rect=[0, 0, 1, 1])
-    plt.savefig(f"{args.pngname}.png", dpi=600)
+    plt.savefig(f"{args.name}.{args.extension}", dpi=600)
